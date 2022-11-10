@@ -1,0 +1,209 @@
+<script type="text/x-red" data-help-name="smaregi-transactions">
+  <p>Use the smaregi Platform API to perform the following actions selected in <code>Operation</code>.</p>
+  <ul>
+    <li>List Transaction</li>
+    <li>Create Transaction</li>
+    <li>Get Transactions</li>
+    <li>Update Transaction</li>
+    <li>Cancel Transaction</li>
+    <li>Dispose Transaction</li>
+    <li>Update Customer</li>
+    <li>CSV Output of Transaction Details</li>
+    <li>Get Transaction Details</li>
+    <li>List Layaways</li>
+    <li>Create Layaways</li>
+    <li>Get Layaways</li>
+    <li>Dispose Layaways</li>
+    <li>List Temporaries</li>
+    <li>Create Temporaries</li>
+    <li>Get Temporaries</li>
+    <li>Delete Temporaries</li>
+    <li>Change Status of Temporaries</li>
+  </ul>
+
+  <h3>Inputs</h3>
+    <dl class="message-properties">
+        <dt>ID <span class="property-type">string</span></dt>
+        <dd>Enter the transaction ID or temporary sales transaction ID to execute the selected process.</dd>
+        <dt>Limit <span class="property-type">number</span></dt>
+        <dd>Enter the number of items to return at a time when retrieving the list, in the range of 1 to 1000.</dd>
+        <dt>Page <span class="property-type">number</span></dt>
+        <dd>Enter the number of target page to be retrieved when retrieving the list.</dd>
+        <dt>Transaction Date <span class="property-type">string</span></dt>
+        <dd>Enter the Transaction Date(From) to the Transaction Date(To) when creating a CSV list of transaction details.</dd>
+        <dt>Callback URL <span class="property-type">string</span></dt>
+        <dd>Enter the URL for webhook notification of the results of a completed or error when a transaction detail CSV file is created.</dd>
+        <dt>Status <span class="property-type">string</span></dt>
+        <dd>Enter the status of the temporary sale to be changed.</dd>
+        <dt>dataJson <span class="property-type">string | object</span></dt>
+        <dd>Enter the JSON object of the data to be processed for the selected process.</dd>
+    </dl>
+
+  <h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">object</span></dt>
+        <dd>Outputs the execution result of the selected process.</dd>
+    </dl>
+
+  <h3>Details</h3>
+  <h4>List Transaction</h4>
+    <p>Retrieves a list of transaction information.</p>
+    <p>Enter the number of items to be returned at one time in the range of 1 to 1000 in <code>msg.limit</code>.</p>
+    <p>Enter the number of target pages to be retrieved in <code>msg.page</code>.</p>
+    <p>Outputs a list of retrieved transaction information.</p>
+
+  <h4>Create Transaction</h4>
+    <p>Register the transaction.</p>
+    <p>Enter the transaction information to be registered in <code>msg.dataJson</code>. Set required fields as default.</p>
+    <pre>{
+    "transactionHeadDivision": "1",
+    "subtotal": "1000",
+    "total": "1000",
+    "storeId": "1",
+    "terminalId": "1",
+    "terminalTranId": "1",
+    "terminalTranDateTime": "2022-11-01T10:02:43+0900",
+    "details": [{
+        "transactionDetailId": "1",
+        "transactionDetailDivision": "1",
+        "salesPrice": "1000",
+        "quantity": "1"
+    }]
+}</pre>
+    <p>The click of the Add button adds the selected item and entered value to the Data JSON object.</p>
+    <p>The click of the Add button for Details 1 adds the selected item and entered value to the first in the Data JSON object details.</p>
+    <p>Outputs registered transaction information.</p>
+
+  <h4>Get Transactions</h4>
+    <p>Retrieve transaction information.</p>
+    <p>Enter the transaction ID to be retrieved in <code>msg.transactionId</code>.</p>
+    <p>Outputs the retrieved transaction information.</p>
+
+  <h4>Update Transaction</h4>
+    <p>Update transaction information.</p>
+    <p>Enter the transaction ID to be updated in <code>msg.transactionId</code>.</p>
+    <p>Enter the transaction information to be updated in <code>msg.dataJson</code>.</p>
+    <pre>{"staffId":"1", "memo":"update test"}</pre>
+    <p>The click of the Add button adds the selected item and entered value to the Data JSON object.</p>
+    <p>Outputs updated transaction information.</p>
+
+  <h4>Cancel Transaction</h4>
+    <p>Cancel the transaction.</p>
+    <p>Enter the transaction ID to be canceled in <code>msg.transactionId</code>.</p>
+    <p>Outputs the canceled transaction information.</p>
+
+  <h4>Dispose Transaction</h4>
+    <p>Dispose the transaction. Creates return transaction information for the specified transaction.</p>
+    <p>Enter the transaction ID to be disposed in <code>msg.transactionId</code>.</p>
+    <p>Outputs the disposed transaction information.</p>
+
+  <h4>Update Customer</h4>
+    <p>Update customer information for the transaction.</p>
+    <p>Enter the transaction ID for updating customer information in <code>msg.transactionId</code>.</p>
+    <p>Enter the customer information to be updated in <code>msg.dataJson</code>.</p>
+    <pre>{"customerCode":"10001"}</pre>
+    <p>The click of the Add button adds the selected item and entered value to the Data JSON object.</p>
+    <p>Outputs transaction information with updated customer information.</p>
+
+  <h4>CSV Output of Transaction Details</h4>
+    <p>Create a CSV file of the list of transaction details information.</p>
+    <p>Enter the transaction date(From) of the transaction details to be retrieved in <code>msg.dateTimeFrom</code>.</p>
+    <p>Enter the transaction date(To) of the transaction details to be retrieved in <code>msg.dateTimeTo</code>.</p>
+    <p>Enter the URL for the webhook notification of the result of creating the transaction details CSV file in <code>msg.callbackUrl</code>.</p>
+    <p>Outputs information on URL, state, and request code for Webhook notification.</p>
+
+  <h4>Get Transaction Details</h4>
+    <p>Retrieve transaction details information.</p>
+    <p>Enter the transaction ID to retrieved transaction details information in <code>msg.transactionId</code>.</p>
+    <p>Outputs the retrieved transaction details.</p>
+
+  <h4>List Layaways</h4>
+    <p>Retrieve a list of layaway items.</p>
+    <p>Enter the number of items to be returned at one time in the range of 1 to 1000 in <code>msg.limit</code>.</p>
+    <p>Enter the number of target pages to be retrieved in <code>msg.page</code>.</p>
+    <p>Outputs the retrieved a list of layaway items.</p>
+
+  <h4>Create Layaways</h4>
+    <p>Register a layaway transaction.</p>
+    <p>Enter the information for the layaway transaction to be registered in <code>msg.dataJson</code>. Set required fields as default.</p>
+    <pre>{
+    "transactionHeadDivision": "10",
+    "subtotal": "1000",
+    "total": "1000",
+    "storeId": "1",
+    "terminalId": "1",
+    "terminalTranId": "1",
+    "terminalTranDateTime": "2022-11-01T10:02:43+0900",
+    "details": [{
+      "transactionDetailId": "1",
+      "transactionDetailDivision": "1",
+      "salesPrice": "1000",
+      "quantity": "1"
+    }]
+}</pre>
+    <p>The click of the Add button adds the selected item and entered value to the Data JSON object.</p>
+    <p>The click of the Add button for Details 1 adds the selected item and entered value to the first in the Data JSON object details.</p>
+    <p>Outputs information on registered layaway transactions.</p>
+
+  <h4>Get Layaways</h4>
+    <p>Retrieve the information on layaway.</p>
+    <p>Enter the transaction ID to be retrieved in <code>msg.transactionId</code>.</p>
+    <p>Outputs the retrieved layaway information.</p>
+
+  <h4>Dispose Layaways</h4>
+    <p>Dispose the information on layaway. Creates return layaway transaction information for the specified layaway transaction.</p>
+    <p>Enter the transaction ID to be disposed in <code>msg.transactionId</code>.</p>
+    <p>Outputs the disposed layaway information.</p>
+
+  <h4>List Temporaries</h4>
+    <p>Retrieve a list of temporaries transaction information.</p>
+    <p>Enter the number of items to be returned at one time in the range of 1 to 1000 in <code>msg.limit</code>.</p>
+    <p>Enter the number of target pages to be retrieved in <code>msg.page</code>.</p>
+    <p>Outputs a list of retrieved temporary transaction.</p>
+
+  <h4>Create Temporaries</h4>
+    <p>Register a temporary transaction.</p>
+    <p>Enter the temporary transaction information to be registered in <code>msg.dataJson</code>. Set required fields as default.</p>
+    <pre>{
+    "transactionHeadDivision": "1",
+    "status": "0",
+    "subtotal": "1000",
+    "total": "1000",
+    "storeId": "1",
+    "terminalId": "1",
+    "terminalTranId": "1",
+    "terminalTranDateTime": "2022-11-01T10:02:43+0900",
+    "details": [{
+      "transactionDetailId": "1",
+      "transactionDetailDivision": "1",
+      "salesPrice": "1000",
+      "quantity": "1"
+    }]
+}</pre>
+    <p>The click of the Add button adds the selected item and entered value to the Data JSON object.</p>
+    <p>The click of the Add button for Details 1 adds the selected item and entered value to the first in the Data JSON object details.</p>
+    <p>Outputs the registered temporary transaction information.</p>
+
+  <h4>Get Temporaries</h4>
+    <p>Retrieve temporary transaction information.</p>
+    <p>Enter the temporary transaction ID to be retrieved in <code>msg.transactionId</code>.</p>
+    <p>Outputs the retrieved temporary transaction information.</p>
+
+  <h4>Delete Temporaries</h4>
+    <p>Delete the temporary transaction.</p>
+    <p>Enter the temporary transaction ID to be deleted in <code>msg.transactionId</code>.</p>
+    <p>Outputs deleted temporary transaction information(empty).</p>
+
+  <h4>Change Status of Temporaries</h4>
+    <p>Changes the status of a temporary transaction.</p>
+    <p>Enter the temporary transaction ID to change the status in <code>msg.transactionId</code>.</p>
+    <p>Enter the status of the temporary transaction to be changed to <code>msg.temporaryStatus</code>.</p>
+    <p>Outputs information on temporary transactions that have changed status.</p>
+
+  <p></p>
+  <p><b>Note</b>: Input items can also be entered in the node's edit dialog, but the value passed in <code>msg.xx</code> takes precedence.</p>
+
+<h3>References</h3>
+  <p>For more information, see the transaction sections of the <a href="https://www1.smaregi.dev/apidoc/#tag/%E5%8F%96%E5%BC%95">smaregi Platform API POS reference</a>.</p>
+
+</script>

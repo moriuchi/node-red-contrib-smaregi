@@ -1,0 +1,532 @@
+<!--
+  Copyright 2014 Atsushi Kojo.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<script type="text/html" data-template-name="smaregi-transactions">
+  <div class="form-row">
+    <label for="node-input-auth"><i class="fa fa-user"></i> Authentication</label>
+    <input type="text" id="node-input-auth">
+  </div>
+  <div class="form-row">
+    <label for="node-input-operation"><i class="fa fa-wrench"></i> Operation</label>
+    <select id="node-input-operation">
+      <option value="list" data-i18n="smaregi-transactions.operation.list"></option>
+      <option value="create" data-i18n="smaregi-transactions.operation.create"></option>
+      <option value="get" data-i18n="smaregi-transactions.operation.get"></option>
+      <option value="update" data-i18n="smaregi-transactions.operation.update"></option>
+      <option value="cancel" data-i18n="smaregi-transactions.operation.cancel"></option>
+      <option value="dispose" data-i18n="smaregi-transactions.operation.dispose"></option>
+      <option value="customer" data-i18n="smaregi-transactions.operation.customer"></option>
+      <option value="out-file" data-i18n="smaregi-transactions.operation.out-file"></option>
+      <option value="details" data-i18n="smaregi-transactions.operation.details"></option>
+      <option value="layaways" data-i18n="smaregi-transactions.operation.layaways"></option>
+      <option value="create-layaways" data-i18n="smaregi-transactions.operation.create-layaways"></option>
+      <option value="get-layaways" data-i18n="smaregi-transactions.operation.get-layaways"></option>
+      <option value="dispose-layaways" data-i18n="smaregi-transactions.operation.dispose-layaways"></option>
+      <option value="temporaries" data-i18n="smaregi-transactions.operation.temporaries"></option>
+      <option value="create-temporaries" data-i18n="smaregi-transactions.operation.create-temporaries"></option>
+      <option value="get-temporaries" data-i18n="smaregi-transactions.operation.get-temporaries"></option>
+      <option value="delete-temporaries" data-i18n="smaregi-transactions.operation.delete-temporaries"></option>
+      <option value="status-temporaries" data-i18n="smaregi-transactions.operation.status-temporaries"></option>
+    </select>
+  </div>
+  <div class="form-row" id="smaregi-transactions-id-row">
+    <label for="node-input-transactionId"><i class="fa fa-tag"></i> ID</label>
+    <input type="text" id="node-input-transactionId" placeholder="id">
+  </div>
+  <div class="form-row" id="smaregi-transactions-limit-row">
+    <label for="node-input-limit"><i class="fa fa-tag"></i> Limit</label>
+    <input type="text" id="node-input-limit" placeholder="1〜1000">
+  </div>
+  <div class="form-row" id="smaregi-transactions-page-row">
+    <label for="node-input-page"><i class="fa fa-tag"></i> Page</label>
+    <input type="text" id="node-input-page" placeholder="1〜">
+  </div>
+  <div class="form-row smaregi-transactions-dateTime-row" >
+    <label for="node-input-dateTimeFrom"><i class="fa fa-tag"></i> <span data-i18n="smaregi-transactions.label.dateTime"></span></label>
+    <span>From: </span>
+    <input type="text" id="node-input-dateTimeFrom" placeholder="YYYY-MM-DDThh:mm:ssTZD" style="width:200px;">
+  </div>
+  <div class="form-row smaregi-transactions-dateTime-row" >
+    <label>&nbsp;</label>
+    <span>&nbsp;&nbsp;To: </span>
+    <input type="text" id="node-input-dateTimeTo" placeholder="YYYY-MM-DDThh:mm:ssTZD" style="width:200px;">
+  </div>
+  <div class="form-row" id="smaregi-transactions-callbackUrl-row">
+    <label for="node-input-callbackUrl"><i class="fa fa-tag"></i> <span data-i18n="smaregi-transactions.label.callbackUrl"></span></label>
+    <input type="text" id="node-input-callbackUrl" >
+  </div>
+  <div class="form-row" id="smaregi-transactions-temporaryStatus-row">
+    <label for="node-input-temporaryStatus"><i class="fa fa-tag"></i> <span data-i18n="smaregi-transactions.label.status"></span></label>
+    <select id="node-input-temporaryStatus">
+      <option value="0" data-i18n="smaregi-transactions.temporaryStatus.normal"></option>
+      <option value="1" data-i18n="smaregi-transactions.temporaryStatus.complete"></option>
+      <option value="2" data-i18n="smaregi-transactions.temporaryStatus.cancel"></option>
+    </select>
+  </div>
+  <div class="form-row smaregi-transactions-dataJson-row">
+    <label for="node-input-dataJson"><i class="fa fa-tag"></i> <span data-i18n="smaregi-transactions.label.dataJson"></span></label>
+    <input type="text" id="node-input-dataJson" placeholder="{}" />
+  </div>
+  <div class="form-row smaregi-transactions-dataJson-row">
+    <label></label>
+    <select id="node-input-dataField" style="width:150px;"></select>
+    <input type="text" id="node-input-dataInput" style="width:120px;" />
+    <button type="button" class="red-ui-button" onclick="setDataJson()"><span data-i18n="smaregi-transactions.label.dataButton"></span></button>
+  </div>
+  <div class="form-row smaregi-transactions-detailJson-row">
+    <label><span data-i18n="smaregi-transactions.label.dataDetail"></span></label>
+    <select id="node-input-detailField" style="width:150px;"></select>
+    <input type="text" id="node-input-detailInput" style="width:120px;" />
+    <button type="button" class="red-ui-button" onclick="setDetailJson()"><span data-i18n="smaregi-transactions.label.dataButton"></span></button>
+  </div>
+  <div class="form-row">
+		<label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="smaregi-transactions.label.name"></span></label>
+		<input type="text" id="node-input-name" data-i18n="[placeholder]smaregi-transactions.placeholder.name" />
+	</div>
+</script>
+
+<script type="text/javascript">
+(function() {
+  RED.nodes.registerType('smaregi-transactions',{
+    category: 'storage-output',
+    color: '#0083ce',
+    defaults: {
+      auth: { type: 'smaregi-auth' },
+      operation: { value: "" },
+			transactionId: { value: "" },
+			limit: { value: "100" },
+			page: { value: "1" },
+			dateTimeFrom: { value: "" },
+			dateTimeTo: { value: "" },
+			callbackUrl: { value: "" },
+			temporaryStatus: { value: "" },
+      dataJson: { value: "" },
+      name: {value:""}
+    },
+    inputs:1,
+    outputs:1,
+    icon: "font-awesome/fa-shopping-basket",
+    label: function() {
+      return this.name || "smaregi-transactions";
+    },
+		labelStyle: function () {
+      return this.name ? 'node_label_italic' : '';
+    },
+    oneditprepare: function() {
+      var node = this;
+
+      $("#node-input-dataJson").typedInput({
+        type:'json',
+        types:['json']
+      });
+
+      /**
+        [YYYY-MM-DDThh:mm:ssTZD] 形式して返す
+      **/
+      function getDafaultDatetime(date){
+        //const date = new Date();
+        const year = date.getFullYear();
+        const month = ("00" + (date.getMonth()+1)).slice(-2);
+        const day = ("00" + date.getDate()).slice(-2);
+        const hours = ("00" + date.getHours()).slice(-2);
+        const minutes = ("00" + date.getMinutes()).slice(-2);
+        const seconds = ("00" + date.getSeconds()).slice(-2);
+        const timezone = date.toString().split("GMT")[1].slice(0, 5);
+
+        return [year, "-", month, "-", day, "T", hours, ":", minutes, ":", seconds, timezone].join("");
+      }
+
+      /**
+        ・登録項目のselect option 作成
+        ・dataJsonのデフォルト値の作成
+      **/
+      function setDataJsonField(operation) {
+        const dataFieldEl = $("#node-input-dataField");
+        const defaultDataJson = {};
+
+        dataFieldEl.children("option").remove();
+
+        smaregi_transactions_items[operation].forEach(item => {
+          const itemField = item.field;
+          let itemDefault = item.default;
+          if (item.require) {
+            if (itemField === "terminalTranDateTime") {
+              itemDefault = getDafaultDatetime(new Date());
+            }
+            defaultDataJson[itemField] = itemDefault;
+          }
+
+          const text_i18n = "smaregi-transactions.label." + itemField;
+          dataFieldEl.append('<option value="' + itemField + '">' + node._(text_i18n) + '</option>');
+        });
+
+        $("#node-input-dataJson").typedInput('value', node.dataJson || JSON.stringify(defaultDataJson));
+      }
+
+      /**
+        ・明細登録項目のselect option 作成
+        ・dataJsonのdetail デフォルト値の作成
+      **/
+      function setDetailJsonField() {
+        const detailFieldEl = $("#node-input-detailField");
+        const defaultDataJson = JSON.parse($("#node-input-dataJson").typedInput('value'));
+        const detailDataJson = {};
+
+        detailFieldEl.children("option").remove();
+        smaregi_transactions_items["details"].forEach(item => {
+          const itemField = item.field;
+          if (item.require) {
+            detailDataJson[itemField] = item.default;
+          }
+
+          const text_i18n = "smaregi-transactions.label." + itemField;
+          detailFieldEl.append('<option value="' + itemField + '">' + node._(text_i18n) + '</option>');
+        });
+        defaultDataJson["details"] = [detailDataJson];
+
+        $("#node-input-dataJson").typedInput('value', node.dataJson || JSON.stringify(defaultDataJson));
+      }
+
+
+      $("#node-input-operation").change(function() {
+        const operation = $("#node-input-operation option:selected").val();
+
+        const limitRow = $("#smaregi-transactions-limit-row");
+        const pageRow = $("#smaregi-transactions-page-row");
+        const idRow = $("#smaregi-transactions-id-row");
+        const dateTimeRow = $(".smaregi-transactions-dateTime-row");
+        const callbackUrlRow = $("#smaregi-transactions-callbackUrl-row");
+        const temporaryStatusRow = $("#smaregi-transactions-temporaryStatus-row");
+        const dataJsonRow = $(".smaregi-transactions-dataJson-row");
+        const detailJsonRow = $(".smaregi-transactions-detailJson-row");
+
+        idRow.hide();
+        limitRow.hide();
+        pageRow.hide();
+        dateTimeRow.hide();
+        callbackUrlRow.hide();
+        temporaryStatusRow.hide();
+        dataJsonRow.hide();
+        detailJsonRow.hide();
+
+        $("#node-input-dataJson").typedInput('value', "");
+
+        if (operation === 'list' || operation === 'layaways' || operation === 'temporaries'){
+          limitRow.show();
+          pageRow.show();
+
+        } else if (operation === 'get' || operation === 'cancel' || operation === 'dispose'
+                    || operation === 'details' || operation === 'get-layaways'
+                    || operation === 'get-temporaries' || operation === 'delete-temporaries'
+                    || operation === 'dispose-layaways') {
+          idRow.show();
+
+        } else if (operation === 'out-file') {
+          dateTimeRow.show();
+          callbackUrlRow.show();
+
+          let fromDate = new Date();
+          let toDate = fromDate.getTime() + (30*24*60*60*1000);
+          fromDate = node.dateTimeFrom || getDafaultDatetime(fromDate);
+          toDate = node.dateTimeTo || getDafaultDatetime(new Date(toDate));
+
+          $("#node-input-dateTimeFrom").val(fromDate);
+          $("#node-input-dateTimeTo").val(toDate);
+
+        } else if (operation === 'status-temporaries') {
+          idRow.show();
+          temporaryStatusRow.show();
+
+        } else if (operation === 'create' || operation === 'create-layaways' || operation === 'create-temporaries') {
+          dataJsonRow.show();
+          detailJsonRow.show();
+          setDataJsonField(operation);
+          setDetailJsonField();
+
+        } else if (operation === 'update' || operation === 'customer') {
+          idRow.show();
+          dataJsonRow.show();
+          setDataJsonField(operation);
+
+        }
+      });
+    }
+  });
+
+  /**
+    入力した値をdataJson に追加
+  **/
+  function setDataJson() {
+    const currentData = JSON.parse($("#node-input-dataJson").typedInput('value'));
+    const dataField = $("#node-input-dataField option:selected").val();
+    const dataInputEl = $("#node-input-dataInput");
+
+    currentData[dataField] = dataInputEl.val();
+
+    $("#node-input-dataJson").typedInput('value', JSON.stringify(currentData));
+    dataInputEl.val("");
+  }
+
+  /**
+    入力した値をdataJson の details 1件目に追加
+  **/
+  function setDetailJson() {
+    const currentData = JSON.parse($("#node-input-dataJson").typedInput('value'));
+    const detailJson = currentData.details[0];
+    const detailField = $("#node-input-detailField option:selected").val();
+    const detailInputEl = $("#node-input-detailInput");
+
+    detailJson[detailField] = detailInputEl.val();
+    currentData.details[0] = detailJson;
+
+    $("#node-input-dataJson").typedInput('value', JSON.stringify(currentData));
+    detailInputEl.val("");
+  }
+
+  const smaregi_transactions_items = {
+    "create": [
+      {"field": "transactionHeadDivision", "require": true, "default": "1"},
+      {"field": "subtotal", "require": true, "default": ""},
+      {"field": "total", "require": true, "default": ""},
+      {"field": "storeId", "require": true, "default": ""},
+      {"field": "terminalId", "require": true, "default": ""},
+      {"field": "terminalTranId", "require": true, "default": ""},
+      {"field": "terminalTranDateTime", "require": true, "default": ""},
+      {"field": "cancelDivision", "require": false, "default": "0"},
+      {"field": "subtotalDiscountPrice", "require": false, "default": ""},
+      {"field": "subtotalDiscountRate", "require": false, "default": ""},
+      {"field": "subtotalDiscountDivision", "require": false, "default": ""},
+      {"field": "pointDiscount", "require": false, "default": ""},
+      {"field": "taxInclude", "require": false, "default": ""},
+      {"field": "taxExclude", "require": false, "default": ""},
+      {"field": "roundingDivision", "require": false, "default": ""},
+      {"field": "roundingPrice", "require": false, "default": ""},
+      {"field": "deposit", "require": false, "default": ""},
+      {"field": "depositCash", "require": false, "default": ""},
+      {"field": "depositCredit", "require": false, "default": ""},
+      {"field": "change", "require": false, "default": ""},
+      {"field": "newPoint", "require": false, "default": ""},
+      {"field": "spendPoint", "require": false, "default": ""},
+      {"field": "point", "require": false, "default": ""},
+      {"field": "totalPoint", "require": false, "default": ""},
+      {"field": "currentMile", "require": false, "default": ""},
+      {"field": "earnMile", "require": false, "default": ""},
+      {"field": "totalMile", "require": false, "default": ""},
+      {"field": "adjustmentMile", "require": false, "default": ""},
+      {"field": "adjustmentMileDivision", "require": false, "default": ""},
+      {"field": "adjustmentMileValue", "require": false, "default": ""},
+      {"field": "customerId", "require": false, "default": ""},
+      {"field": "customerCode", "require": false, "default": ""},
+      {"field": "sumDivision", "require": false, "default": "0"},
+      {"field": "sumDate", "require": false, "default": ""},
+      {"field": "customerRank", "require": false, "default": ""},
+      {"field": "customerGroupId", "require": false, "default": ""},
+      {"field": "customerGroupId2", "require": false, "default": ""},
+      {"field": "customerGroupId3", "require": false, "default": ""},
+      {"field": "customerGroupId4", "require": false, "default": ""},
+      {"field": "customerGroupId5", "require": false, "default": ""},
+      {"field": "staffId", "require": false, "default": ""},
+      {"field": "memo", "require": false, "default": ""},
+      {"field": "receiptMemo", "require": false, "default": ""},
+      {"field": "carriage", "require": false, "default": ""},
+      {"field": "commission", "require": false, "default": ""},
+      {"field": "guestNumbers", "require": false, "default": ""},
+      {"field": "guestNumbersMale", "require": false, "default": ""},
+      {"field": "guestNumbersFemale", "require": false, "default": ""},
+      {"field": "guestNumbersUnknown", "require": false, "default": ""},
+      {"field": "enterDateTime", "require": false, "default": ""},
+      {"field": "taxFreeSalesDivision", "require": false, "default": "0"},
+      {"field": "netTaxFreeGeneralTaxInclude", "require": false, "default": ""},
+      {"field": "netTaxFreeGeneralTaxExclude", "require": false, "default": ""},
+      {"field": "netTaxFreeConsumableTaxInclude", "require": false, "default": ""},
+      {"field": "netTaxFreeConsumableTaxExclude", "require": false, "default": ""},
+      {"field": "tags", "require": false, "default": ""},
+      {"field": "pointGivingDivision", "require": false, "default": ""},
+      {"field": "pointGivingUnitPrice", "require": false, "default": ""},
+      {"field": "pointGivingUnit", "require": false, "default": ""},
+      {"field": "pointSpendDivision", "require": false, "default": "1"},
+      {"field": "mileageDivision", "require": false, "default": "0"},
+      {"field": "mileageLabel", "require": false, "default": ""},
+      {"field": "customerPinCode", "require": false, "default": ""},
+      {"field": "sellDivision", "require": false, "default": ""},
+      {"field": "taxRate", "require": false, "default": ""},
+      {"field": "taxRounding", "require": false, "default": ""},
+      {"field": "discountRoundingDivision", "require": false, "default": ""},
+      {"field": "transactionUuid", "require": false, "default": ""},
+      {"field": "exchangeTicketNo", "require": false, "default": ""},
+      {"field": "giftReceiptValidDays", "require": false, "default": ""},
+      {"field": "barcode", "require": false, "default": ""},
+      {"field": "layawayServerTransactionHeadId", "require": false, "default": ""}
+    ],
+    "update": [
+      {"field": "customerGroupId", "require": false, "default": ""},
+      {"field": "customerGroupId2", "require": false, "default": ""},
+      {"field": "customerGroupId3", "require": false, "default": ""},
+      {"field": "customerGroupId4", "require": false, "default": ""},
+      {"field": "customerGroupId5", "require": false, "default": ""},
+      {"field": "staffId", "require": false, "default": ""},
+      {"field": "memo", "require": false, "default": ""},
+      {"field": "receiptMemo", "require": false, "default": ""},
+      {"field": "guestNumbers", "require": false, "default": ""},
+      {"field": "guestNumbersMale", "require": false, "default": ""},
+      {"field": "guestNumbersFemale", "require": false, "default": ""},
+      {"field": "guestNumbersUnknown", "require": false, "default": ""},
+      {"field": "tags", "require": false, "default": ""}
+    ],
+    "customer": [
+      {"field": "customerId", "require": false, "default": ""},
+      {"field": "customerCode", "require": false, "default": ""},
+      {"field": "pointUpdateDivision", "require": false, "default": ""}
+    ],
+    "create-layaways": [
+      {"field": "transactionHeadDivision", "require": true, "default": "10"},
+      {"field": "subtotal", "require": true, "default": ""},
+      {"field": "total", "require": true, "default": ""},
+      {"field": "storeId", "require": true, "default": ""},
+      {"field": "terminalId", "require": true, "default": ""},
+      {"field": "terminalTranId", "require": true, "default": ""},
+      {"field": "terminalTranDateTime", "require": true, "default": ""},
+      {"field": "subtotalDiscountPrice", "require": false, "default": ""},
+      {"field": "subtotalDiscountRate", "require": false, "default": ""},
+      {"field": "subtotalDiscountDivision", "require": false, "default": ""},
+      {"field": "pointDiscount", "require": false, "default": ""},
+      {"field": "taxInclude", "require": false, "default": ""},
+      {"field": "taxExclude", "require": false, "default": ""},
+      {"field": "roundingDivision", "require": false, "default": ""},
+      {"field": "roundingPrice", "require": false, "default": ""},
+      {"field": "deposit", "require": false, "default": ""},
+      {"field": "depositCash", "require": false, "default": ""},
+      {"field": "depositCredit", "require": false, "default": ""},
+      {"field": "change", "require": false, "default": ""},
+      {"field": "customerId", "require": false, "default": ""},
+      {"field": "customerCode", "require": false, "default": ""},
+      {"field": "sumDivision", "require": false, "default": ""},
+      {"field": "sumDate", "require": false, "default": ""},
+      {"field": "customerRank", "require": false, "default": ""},
+      {"field": "customerGroupId", "require": false, "default": ""},
+      {"field": "customerGroupId2", "require": false, "default": ""},
+      {"field": "customerGroupId3", "require": false, "default": ""},
+      {"field": "customerGroupId4", "require": false, "default": ""},
+      {"field": "customerGroupId5", "require": false, "default": ""},
+      {"field": "staffId", "require": false, "default": ""},
+      {"field": "memo", "require": false, "default": ""},
+      {"field": "receiptMemo", "require": false, "default": ""},
+      {"field": "guestNumbers", "require": false, "default": ""},
+      {"field": "guestNumbersMale", "require": false, "default": ""},
+      {"field": "guestNumbersFemale", "require": false, "default": ""},
+      {"field": "guestNumbersUnknown", "require": false, "default": ""},
+      {"field": "enterDateTime", "require": false, "default": ""},
+      {"field": "taxFreeSalesDivision", "require": false, "default": ""},
+      {"field": "netTaxFreeGeneralTaxInclude", "require": false, "default": ""},
+      {"field": "netTaxFreeGeneralTaxExclude", "require": false, "default": ""},
+      {"field": "netTaxFreeConsumableTaxInclude", "require": false, "default": ""},
+      {"field": "netTaxFreeConsumableTaxExclude", "require": false, "default": ""},
+      {"field": "tags", "require": false, "default": ""},
+      {"field": "pointGivingDivision", "require": false, "default": ""},
+      {"field": "pointGivingUnitPrice", "require": false, "default": ""},
+      {"field": "pointGivingUnit", "require": false, "default": ""},
+      {"field": "pointSpendDivision", "require": false, "default": ""},
+      {"field": "mileageDivision", "require": false, "default": ""},
+      {"field": "mileageLabel", "require": false, "default": ""},
+      {"field": "customerPinCode", "require": false, "default": ""},
+      {"field": "sellDivision", "require": false, "default": ""},
+      {"field": "taxRate", "require": false, "default": ""},
+      {"field": "taxRounding", "require": false, "default": ""},
+      {"field": "discountRoundingDivision", "require": false, "default": ""},
+      {"field": "transactionUuid", "require": false, "default": ""},
+      {"field": "exchangeTicketNo", "require": false, "default": ""},
+      {"field": "giftReceiptValidDays", "require": false, "default": ""}
+    ],
+    "create-temporaries": [
+      {"field": "transactionHeadDivision", "require": true, "default": "1"},
+      {"field": "status", "require": true, "default": "0"},
+      {"field": "subtotal", "require": true, "default": ""},
+      {"field": "total", "require": true, "default": ""},
+      {"field": "storeId", "require": true, "default": ""},
+      {"field": "terminalId", "require": true, "default": ""},
+      {"field": "terminalTranId", "require": true, "default": ""},
+      {"field": "terminalTranDateTime", "require": true, "default": ""},
+      {"field": "barcode", "require": false, "default": ""},
+      {"field": "sequentialNumber", "require": false, "default": ""},
+      {"field": "preRegistrationName", "require": false, "default": ""},
+      {"field": "subtotalDiscountPrice", "require": false, "default": ""},
+      {"field": "subtotalDiscountRate", "require": false, "default": ""},
+      {"field": "subtotalDiscountDivision", "require": false, "default": ""},
+      {"field": "pointDiscount", "require": false, "default": ""},
+      {"field": "taxInclude", "require": false, "default": ""},
+      {"field": "taxExclude", "require": false, "default": ""},
+      {"field": "roundingDivision", "require": false, "default": ""},
+      {"field": "roundingPrice", "require": false, "default": ""},
+      {"field": "newPoint", "require": false, "default": ""},
+      {"field": "spendPoint", "require": false, "default": ""},
+      {"field": "point", "require": false, "default": ""},
+      {"field": "totalPoint", "require": false, "default": ""},
+      {"field": "customerId", "require": false, "default": ""},
+      {"field": "customerCode", "require": false, "default": ""},
+      {"field": "customerGroupId", "require": false, "default": ""},
+      {"field": "customerGroupId2", "require": false, "default": ""},
+      {"field": "customerGroupId3", "require": false, "default": ""},
+      {"field": "customerGroupId4", "require": false, "default": ""},
+      {"field": "customerGroupId5", "require": false, "default": ""},
+      {"field": "staffId", "require": false, "default": ""},
+      {"field": "memo", "require": false, "default": ""},
+      {"field": "receiptMemo", "require": false, "default": ""},
+      {"field": "guestNumbers", "require": false, "default": ""},
+      {"field": "guestNumbersMale", "require": false, "default": ""},
+      {"field": "guestNumbersFemale", "require": false, "default": ""},
+      {"field": "guestNumbersUnknown", "require": false, "default": ""},
+      {"field": "enterDateTime", "require": false, "default": ""},
+      {"field": "taxFreeSalesDivision", "require": false, "default": ""},
+      {"field": "netTaxFreeGeneralTaxInclude", "require": false, "default": ""},
+      {"field": "netTaxFreeGeneralTaxExclude", "require": false, "default": ""},
+      {"field": "netTaxFreeConsumableTaxInclude", "require": false, "default": ""},
+      {"field": "netTaxFreeConsumableTaxExclude", "require": false, "default": ""},
+      {"field": "tags", "require": false, "default": ""},
+      {"field": "mileageDivision", "require": false, "default": ""},
+      {"field": "mileageLabel", "require": false, "default": ""},
+      {"field": "sellDivision", "require": false, "default": ""},
+      {"field": "taxRate", "require": false, "default": ""},
+      {"field": "taxRounding", "require": false, "default": ""},
+      {"field": "discountRoundingDivision", "require": false, "default": ""}
+    ],
+    "details": [
+      {"field": "transactionDetailId", "require": true, "default": ""},
+      {"field": "transactionDetailDivision", "require": true, "default": "1"},
+      {"field": "salesPrice", "require": true, "default": ""},
+      {"field": "quantity", "require": true, "default": ""},
+      {"field": "parentTransactionDetailId", "require": false, "default": ""},
+      {"field": "productId", "require": false, "default": ""},
+      {"field": "productCode", "require": false, "default": ""},
+      {"field": "productName", "require": false, "default": ""},
+      {"field": "printReceiptProductName", "require": false, "default": ""},
+      {"field": "taxDivision", "require": false, "default": ""},
+      {"field": "price", "require": false, "default": ""},
+      {"field": "unitDiscountPrice", "require": false, "default": ""},
+      {"field": "unitDiscountRate", "require": false, "default": ""},
+      {"field": "unitDiscountDivision", "require": false, "default": ""},
+      {"field": "categoryId", "require": false, "default": ""},
+      {"field": "categoryName", "require": false, "default": ""},
+      {"field": "discriminationNo", "require": false, "default": ""},
+      {"field": "salesDivision", "require": false, "default": ""},
+      {"field": "productDivision", "require": false, "default": ""},
+      {"field": "taxFreeDivision", "require": false, "default": ""},
+      {"field": "taxFreeCommodityPrice", "require": false, "default": ""},
+      {"field": "taxFree", "require": false, "default": ""},
+      {"field": "productBundleGroupId", "require": false, "default": ""},
+      {"field": "reduceTaxId", "require": false, "default": ""}
+    ]
+  };
+})();
+</script>

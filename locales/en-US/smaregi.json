@@ -1,0 +1,16 @@
+{
+  "smaregi-auth" : {
+      "label" : {
+          "contractId" : "Contract ID",
+          "clientId" : "Client ID",
+          "clientSecret" : "Client Secret",
+          "name": "Name"
+      },
+      "placeholder" : {
+          "contractId" : "Contract ID",
+          "clientId" : "Client ID",
+          "clientSecret" : "Client Secret",
+          "name": "Name"
+      }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "smaregi-auth" : {
+      "label" : {
+          "contractId" : "契約 ID",
+          "clientId" : "クライアント ID",
+          "clientSecret" : "クライアントシークレット",
+          "name": "名前"
+      },
+      "placeholder" : {
+          "contractId" : "契約 ID",
+          "clientId" : "クライアント ID",
+          "clientSecret" : "クライアントシークレット",
+          "name": "名前"
+      }
+  }
+}
