@@ -58,6 +58,15 @@ The smaregi-transactions node executes the following transaction process.
 - **Delete Temporaries** - Delete the temporary transaction.
 - **Change Status of Temporaries** - Changes the status of a temporary transaction.
 
+### smaregi-stock node
+
+The smaregi-stock node executes the following stock process.
+
+- **List Stock** - Retrieves a list of stock information.
+- **Update Stock** - Update stock information. The stock amount is updated to equal the value entered.
+- **Update Stock Relative Value** - Updates stock information. The stock amount is updated to the current value plus the entered value (or minus the entered value if the entered value is negative).
+- **Bulk Stock Relative Value** - Updates stock information in a batch. The stock amount is updated to the current value plus the entered value (or minus the entered value if the entered value is negative).
+- **Get Stock Change History** - Retrieve stock change history information.
 
 **Note**： For more information, see [smaregi Platform API POS reference](https://www1.smaregi.dev/apidoc/).
 

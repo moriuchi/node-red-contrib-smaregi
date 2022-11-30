@@ -1,0 +1,24 @@
+{
+  "smaregi-stock" : {
+    "label" : {
+        "productId": "商品 ID",
+        "storeId": "店舗 ID",
+        "stockAmount": "在庫数",
+        "callbackUrl" : "完了通知URL",
+        "name": "名前"
+    },
+    "placeholder" : {
+        "productId": "商品 ID",
+        "storeId": "店舗 ID",
+        "stockAmount": "在庫数",
+        "name": "名前"
+    },
+    "operation" : {
+        "list" : "在庫一覧取得",
+        "update" : "在庫更新",
+        "add" : "在庫相対値更新",
+        "bulk" : "在庫一括相対値更新",
+        "get" : "在庫変動履歴取得"
+    }
+  }
+}

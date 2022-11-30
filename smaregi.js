@@ -33,7 +33,8 @@ module.exports = function (RED) {
         clientSecret: credentials.clientSecret,
         isSandbox: node.sandbox,
         scopes: [
-          "pos.transactions:read", "pos.transactions:write"
+          "pos.transactions:read", "pos.transactions:write",
+          "pos.stock:read", "pos.stock:write", "pos.stock-changes:read"
         ]
       };
 

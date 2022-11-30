@@ -1,0 +1,24 @@
+{
+  "smaregi-stock" : {
+    "label" : {
+        "productId": "Product ID",
+        "storeId": "Store ID",
+        "stockAmount": "Stock Amount",
+        "callbackUrl" : "Callback URL",
+        "name": "Name"
+    },
+    "placeholder" : {
+        "productId": "Product ID",
+        "storeId": "Store ID",
+        "stockAmount": "Stock Amount",
+        "name": "Name"
+    },
+    "operation" : {
+        "list" : "List Stock",
+        "update" : "Update Stock",
+        "add" : "Update Stock Relative Value",
+        "bulk" : "Bulk Stock Relative Value",
+        "get" : "Get Stock Change History"
+    }
+  }
+}

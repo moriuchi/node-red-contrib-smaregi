@@ -12,7 +12,8 @@
   "node-red": {
     "nodes": {
       "smaregi": "smaregi.js",
-      "smaregi-transactions": "smaregi-transactions.js"
+      "smaregi-transactions": "smaregi-transactions.js",
+      "smaregi-stock": "smaregi-stock.js"
     }
   }
 }

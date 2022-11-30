@@ -1,0 +1,223 @@
+<!--
+  Copyright 2014 Atsushi Kojo.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<script type="text/html" data-template-name="smaregi-stock">
+  <div class="form-row">
+    <label for="node-input-auth"><i class="fa fa-user"></i> Authentication</label>
+    <input type="text" id="node-input-auth">
+  </div>
+  <div class="form-row">
+    <label for="node-input-operation"><i class="fa fa-wrench"></i> Operation</label>
+    <select id="node-input-operation">
+      <option value="list" data-i18n="smaregi-stock.operation.list"></option>
+      <option value="update" data-i18n="smaregi-stock.operation.update"></option>
+      <option value="add" data-i18n="smaregi-stock.operation.add"></option>
+      <option value="bulk" data-i18n="smaregi-stock.operation.bulk"></option>
+      <option value="get" data-i18n="smaregi-stock.operation.get"></option>
+    </select>
+  </div>
+  <div class="form-row" id="smaregi-stock-productId-row">
+    <label for="node-input-productId"><i class="fa fa-tag"></i> <span data-i18n="smaregi-stock.label.productId"></span></label>
+    <input type="text" id="node-input-productId" data-i18n="[placeholder]smaregi-stock.placeholder.productId" />
+  </div>
+  <div class="form-row" id="smaregi-stock-storeId-row">
+    <label for="node-input-storeId"><i class="fa fa-tag"></i> <span data-i18n="smaregi-stock.label.storeId"></span></label>
+    <input type="text" id="node-input-storeId" data-i18n="[placeholder]smaregi-stock.placeholder.storeId" />
+  </div>
+  <div class="form-row" id="smaregi-stock-limit-row">
+    <label for="node-input-limit"><i class="fa fa-tag"></i> Limit</label>
+    <input type="text" id="node-input-limit" placeholder="1〜1000">
+  </div>
+  <div class="form-row" id="smaregi-stock-page-row">
+    <label for="node-input-page"><i class="fa fa-tag"></i> Page</label>
+    <input type="text" id="node-input-page" placeholder="1〜">
+  </div>
+  <div class="form-row" id="smaregi-stock-stockAmount-row">
+    <label for="node-input-stockAmount"><i class="fa fa-tag"></i> <span data-i18n="smaregi-stock.label.stockAmount"></span></label>
+    <input type="text" id="node-input-stockAmount" data-i18n="[placeholder]smaregi-stock.placeholder.stockAmount"/>
+  </div>
+  <div class="form-row node-input-stock-container-row">
+    <ol id="node-input-stock-container"></ol>
+  </div>
+  <div class="form-row" id="smaregi-stock-callbackUrl-row">
+    <label for="node-input-callbackUrl"><i class="fa fa-tag"></i> <span data-i18n="smaregi-stock.label.callbackUrl"></span></label>
+    <input type="text" id="node-input-callbackUrl" />
+  </div>
+  <div class="form-row">
+		<label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="smaregi-stock.label.name"></span></label>
+		<input type="text" id="node-input-name" data-i18n="[placeholder]smaregi-stock.placeholder.name" />
+	</div>
+</script>
+
+<stype>
+  #node-input-stock-container input[type=text] {
+    width: auto;
+    height: 26px;
+    vertical-align: middle;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+</stype>
+
+<script type="text/javascript">
+(function() {
+  RED.nodes.registerType('smaregi-stock',{
+    category: 'storage-output',
+    color: '#0083ce',
+    defaults: {
+      auth: { type: 'smaregi-auth' },
+      operation: { value: "" },
+			limit: { value: "100" },
+			page: { value: "1" },
+			productId: { value: "" },
+			storeId: { value: "" },
+			stockAmount: { value: "" },
+      stocks: { value: "" },
+			callbackUrl: { value: "" },
+      name: {value:""}
+    },
+    inputs:1,
+    outputs:1,
+    icon: "font-awesome/fa-shopping-basket",
+    label: function() {
+      return this.name || "smaregi-stock";
+    },
+		labelStyle: function () {
+      return this.name ? 'node_label_italic' : '';
+    },
+    oneditprepare: function() {
+      var node = this;
+
+      $("#node-input-operation").change(function() {
+        const operation = $("#node-input-operation option:selected").val();
+
+        const limitRow = $("#smaregi-stock-limit-row");
+        const pageRow = $("#smaregi-stock-page-row");
+        const productIdRow = $("#smaregi-stock-productId-row");
+        const storeIdRow = $("#smaregi-stock-storeId-row");
+        const stockAmountRow = $("#smaregi-stock-stockAmount-row");
+        const callbackUrlRow = $("#smaregi-stock-callbackUrl-row");
+        const containerRow = $(".node-input-stock-container-row");
+
+        limitRow.hide();
+        pageRow.hide();
+        productIdRow.hide();
+        storeIdRow.hide();
+        stockAmountRow.hide();
+        callbackUrlRow.hide();
+        containerRow.hide();
+
+        if (operation === 'list'){
+          limitRow.show();
+          pageRow.show();
+
+        } else if (operation === 'update' || operation === 'add') {
+          productIdRow.show();
+          storeIdRow.show();
+          stockAmountRow.show();
+
+        } else if (operation === 'bulk') {
+          callbackUrlRow.show();
+          containerRow.show();
+
+        } else if (operation === 'get') {
+          limitRow.show();
+          pageRow.show();
+          productIdRow.show();
+          storeIdRow.show();
+        }
+      });
+
+      $("#node-input-stock-container").css('min-height','150px').css('min-width','400px').editableList({
+        addItem: function(container, i, opt) {
+            container.css({
+              overflow: 'hidden',
+              whiteSpace: 'nowrap',
+              display: "flex",
+              "align-items":"center"
+            });
+            var inputRows = $('<div></div>', {style:"flex-grow:1"}).appendTo(container);
+            var row1 = $('<div></div>', {style:"display: flex;"}).appendTo(inputRows);
+            var row2 = $('<div/>', {style:"display: flex; padding-top: 5px;"}).appendTo(inputRows);
+            var row3 = $('<div/>', {style:"display: flex; padding-top: 5px;"}).appendTo(inputRows);
+
+            $('<label/>', {for:"node-input-stock-productId-"+i, style:"margin-left: 3px;"})
+              .text(node._("smaregi-stock.label.productId")).appendTo(row1);
+            $('<input/>', {id:"node-input-stock-productId-"+i, class:"node-input-stock-productId",
+                          type:"text", placeholder: node._("smaregi-stock.placeholder.productId")})
+              .val(opt.productId).appendTo(row1);
+
+            $('<label/>', {for:"node-input-stock-storeId-"+i, style:"margin-left: 3px;"})
+              .text(node._("smaregi-stock.label.storeId")).appendTo(row2);
+            $('<input/>', {id:"node-input-stock-storeId-"+i, class:"node-input-stock-storeId",
+                          type:"text", placeholder: node._("smaregi-stock.placeholder.storeId")})
+              .val(opt.storeId).appendTo(row2);
+
+            $('<label/>', {for:"node-input-stock-stockAmount-"+i, style:"margin-left: 3px;"})
+              .text(node._("smaregi-stock.label.stockAmount")).appendTo(row3);
+            $('<input/>', {id:"node-input-stock-stockAmount-"+i, class:"node-input-stock-stockAmount",
+                          type:"text", placeholder: node._("smaregi-stock.placeholder.stockAmount")})
+              .val(opt.stockAmount).appendTo(row3);
+        },
+        sortable: false,
+        removable: true
+      });
+
+      var addStocks = [];
+      if (!node.stocks) {
+        addStocks.push({"productId": "", "storeId": "", "stockAmount": ""});
+      } else if (typeof node.stocks === 'string') {
+        addStocks = JSON.parse(node.stocks);
+      } else {
+        addStocks = addStocks.concat(node.stocks);
+      }
+
+      for (var i=0; i<addStocks.length; i++) {
+        var stock = addStocks[i];
+        $("#node-input-stock-container").editableList('addItem', stock);
+      }
+
+    },
+    oneditsave: function() {
+      var items = $("#node-input-stock-container").editableList('items');
+      var node = this;
+      var stocks = [];
+      items.each(function(i) {
+        var item = $(this);
+        var productId = item.find(".node-input-stock-productId").val();
+        var storeId = item.find(".node-input-stock-storeId").val();
+        var stockAmount = item.find(".node-input-stock-stockAmount").val();
+        stocks.push({
+          "productId": productId,
+          "storeId": storeId,
+          "stockAmount": stockAmount
+        });
+      });
+      node.stocks = JSON.stringify(stocks);
+    },
+    oneditresize: function(size) {
+      var rows = $("#dialog-form>div:not(.node-input-stock-container-row)");
+      var height = size.height;
+      for (var i=0; i<rows.length; i++) {
+          height -= $(rows[i]).outerHeight(true);
+      }
+      var editorRow = $("#dialog-form>div.node-input-stock-container-row");
+      height -= (parseInt(editorRow.css("marginTop"))+parseInt(editorRow.css("marginBottom")));
+      height += 16;
+      $("#node-input-stock-container").editableList('height',height);
+    }
+  });
+})();
+</script>

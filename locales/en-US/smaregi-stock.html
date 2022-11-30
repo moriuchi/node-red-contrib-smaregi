@@ -1,0 +1,81 @@
+<script type="text/x-red" data-help-name="smaregi-stock">
+  <p>Use the smaregi Platform API to perform the following actions selected in <code>Operation</code>.</p>
+  <ul>
+    <li>List Stock</li>
+    <li>Update Stock</li>
+    <li>Update Stock Relative Value</li>
+    <li>Bulk Stock Relative Value</li>
+    <li>Get Stock Change History</li>
+  </ul>
+
+  <h3>Inputs</h3>
+    <dl class="message-properties">
+        <dt>Product ID <span class="property-type">string</span></dt>
+        <dd>Enter the product ID for the selected process.</dd>
+        <dt>Store ID <span class="property-type">string</span></dt>
+        <dd>Enter the store ID for the selected process.</dd>
+        <dt>Stock Amount <span class="property-type">string</span></dt>
+        <dd>Enter the stock amount for the selected process.</dd>
+        <dt>Limit <span class="property-type">number</span></dt>
+        <dd>Enter the number of items to return at a time when retrieving the list, in the range of 1 to 1000.</dd>
+        <dt>Page <span class="property-type">number</span></dt>
+        <dd>Enter the number of target page to be retrieved when retrieving the list.</dd>
+        <dt>stocks <span class="property-type">string | array</span></dt>
+        <dd>Enter the array of stock information to be updated in bulk.</dd>
+        <dt>Callback URL <span class="property-type">string</span></dt>
+        <dd>Enter the URL for webhook notification of the update results when the stock batch relative value update process is completed.</dd>
+    </dl>
+
+  <h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">object</span></dt>
+        <dd>Outputs the execution result of the selected process.</dd>
+    </dl>
+
+  <h3>Details</h3>
+  <h4>List Stock</h4>
+    <p>Retrieves a list of stock information.</p>
+    <p>Enter the number of items to be returned at one time in the range of 1 to 1000 in <code>msg.limit</code>.</p>
+    <p>Enter the number of target pages to be retrieved in <code>msg.page</code>.</p>
+    <p>Outputs a list of retrieved stock information.</p>
+
+  <h4>Update Stock</h4>
+    <p>Update stock information. The stock amount is updated to equal the value entered.</p>
+    <p>Enter the product ID to be updated in <code>msg.productId</code>. Required.</p>
+    <p>Enter the store ID to be updated in <code>msg.storeId</code>. Required.</p>
+    <p>Enter the stock amount in <code>msg.stockAmount</code>. Required.</p>
+    <p>Outputs updated stock information.</p>
+
+  <h4>Update Stock Relative Value</h4>
+    <p>Updates stock information. The stock amount is updated to the current value plus the entered value (or minus the entered value if the entered value is negative).</p>
+    <p>Enter the product ID to be updated in <code>msg.productId</code>. Required.</p>
+    <p>Enter the store ID to be updated in <code>msg.storeId</code>. Required.</p>
+    <p>Enter the stock amount in <code>msg.stockAmount</code>. Required.</p>
+    <p>Outputs updated stock information.</p>
+
+  <h4>Bulk Stock Relative Value</h4>
+    <p>Updates stock information in a batch. The stock amount is updated to the current value plus the entered value (or minus the entered value if the entered value is negative).</p>
+    <p>Enter the stock information to be updated in <code>msg.stocks</code>.</p>
+    <pre>[{
+  "productId": "1234567",
+  "storeId": "1",
+  "stockAmount": 100
+}]</pre>
+    <p>Enter the URL for the webhook notification of the update results when the product update is completed in <code>msg.callbackUrl</code>.</p>
+    <p>Outputs information on URLs and request IDs for Webhook notification.</p>
+
+  <h4>Get Stock Change History</h4>
+    <p>Retrieve stock change history information.</p>
+    <p>Enter the product ID to be retrieved in <code>msg.productId</code>. Required.</p>
+    <p>Enter the store ID to be retrieved in <code>msg.storeId</code>. Required.</p>
+    <p>Enter the number of items to be returned at one time in the range of 1 to 1000 in <code>msg.limit</code>.</p>
+    <p>Enter the number of target pages to be retrieved in <code>msg.page</code>.</p>
+    <p>Outputs the retrieved stock change history information.</p>
+
+  <p></p>
+  <p><b>Note</b>: Input items can also be entered in the node's edit dialog, but the value passed in <code>msg.xx</code> takes precedence.</p>
+
+<h3>References</h3>
+<p>For more information, see the stock sections of the <a href="https://www1.smaregi.dev/apidoc/#tag/%E5%9C%A8%E5%BA%AB">smaregi Platform API POS reference</a>.</p>
+
+</script>
