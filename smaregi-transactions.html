@@ -83,13 +83,16 @@
     <label></label>
     <select id="node-input-dataField" style="width:150px;"></select>
     <input type="text" id="node-input-dataInput" style="width:120px;" />
-    <button type="button" class="red-ui-button" onclick="setDataJson()"><span data-i18n="smaregi-transactions.label.dataButton"></span></button>
+    <button type="button" id="node-dataInput-button" class="red-ui-button"><span data-i18n="smaregi-transactions.label.dataButton"></span></button>
   </div>
   <div class="form-row smaregi-transactions-detailJson-row">
     <label><span data-i18n="smaregi-transactions.label.dataDetail"></span></label>
     <select id="node-input-detailField" style="width:150px;"></select>
     <input type="text" id="node-input-detailInput" style="width:120px;" />
-    <button type="button" class="red-ui-button" onclick="setDetailJson()"><span data-i18n="smaregi-transactions.label.dataButton"></span></button>
+    <button type="button" id="node-detailInput-button" class="red-ui-button"><span data-i18n="smaregi-transactions.label.dataButton"></span></button>
+  </div>
+  <div class="form-row node-input-transactions-container-row">
+    <ol id="node-input-transactions-container"></ol>
   </div>
   <div class="form-row">
 		<label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="smaregi-transactions.label.name"></span></label>
@@ -136,7 +139,6 @@
         [YYYY-MM-DDThh:mm:ssTZD] 形式して返す
       **/
       function getDafaultDatetime(date){
-        //const date = new Date();
         const year = date.getFullYear();
         const month = ("00" + (date.getMonth()+1)).slice(-2);
         const day = ("00" + date.getDate()).slice(-2);
@@ -152,9 +154,9 @@
         ・登録項目のselect option 作成
         ・dataJsonのデフォルト値の作成
       **/
-      function setDataJsonField(operation) {
+      function setDataJsonField() {
         const dataFieldEl = $("#node-input-dataField");
-        const defaultDataJson = {};
+        let defaultDataJson = {};
 
         dataFieldEl.children("option").remove();
 
@@ -172,7 +174,13 @@
           dataFieldEl.append('<option value="' + itemField + '">' + node._(text_i18n) + '</option>');
         });
 
-        $("#node-input-dataJson").typedInput('value', node.dataJson || JSON.stringify(defaultDataJson));
+        if (node.operation === operation) {
+          defaultDataJson = node.dataJson || defaultDataJson;
+        }
+        if (typeof defaultDataJson === "object") {
+          defaultDataJson = JSON.stringify(defaultDataJson);
+        }
+        $("#node-input-dataJson").typedInput('value', defaultDataJson);
       }
 
       /**
@@ -181,7 +189,7 @@
       **/
       function setDetailJsonField() {
         const detailFieldEl = $("#node-input-detailField");
-        const defaultDataJson = JSON.parse($("#node-input-dataJson").typedInput('value'));
+        let defaultDataJson = JSON.parse($("#node-input-dataJson").typedInput('value'));
         const detailDataJson = {};
 
         detailFieldEl.children("option").remove();
@@ -196,12 +204,18 @@
         });
         defaultDataJson["details"] = [detailDataJson];
 
-        $("#node-input-dataJson").typedInput('value', node.dataJson || JSON.stringify(defaultDataJson));
+        if (node.operation === operation) {
+          defaultDataJson = node.dataJson || defaultDataJson;
+        }
+        if (typeof defaultDataJson === "object") {
+          defaultDataJson = JSON.stringify(defaultDataJson);
+        }
+        $("#node-input-dataJson").typedInput('value', defaultDataJson);
       }
 
-
+      let operation = "";
       $("#node-input-operation").change(function() {
-        const operation = $("#node-input-operation option:selected").val();
+        operation = $("#node-input-operation option:selected").val();
 
         const limitRow = $("#smaregi-transactions-limit-row");
         const pageRow = $("#smaregi-transactions-page-row");
@@ -211,6 +225,7 @@
         const temporaryStatusRow = $("#smaregi-transactions-temporaryStatus-row");
         const dataJsonRow = $(".smaregi-transactions-dataJson-row");
         const detailJsonRow = $(".smaregi-transactions-detailJson-row");
+        const containerRow = $(".node-input-transactions-container-row");
 
         idRow.hide();
         limitRow.hide();
@@ -220,12 +235,15 @@
         temporaryStatusRow.hide();
         dataJsonRow.hide();
         detailJsonRow.hide();
+        containerRow.hide();
 
         $("#node-input-dataJson").typedInput('value', "");
 
         if (operation === 'list' || operation === 'layaways' || operation === 'temporaries'){
           limitRow.show();
           pageRow.show();
+          containerRow.show();
+          addQueryContainerItem();
 
         } else if (operation === 'get' || operation === 'cancel' || operation === 'dispose'
                     || operation === 'details' || operation === 'get-layaways'
@@ -252,48 +270,202 @@
         } else if (operation === 'create' || operation === 'create-layaways' || operation === 'create-temporaries') {
           dataJsonRow.show();
           detailJsonRow.show();
-          setDataJsonField(operation);
+          setDataJsonField();
           setDetailJsonField();
 
         } else if (operation === 'update' || operation === 'customer') {
           idRow.show();
           dataJsonRow.show();
-          setDataJsonField(operation);
-
+          setDataJsonField();
         }
       });
+
+      /**
+        入力した値をdataJson に追加
+      **/
+      $("#node-dataInput-button").click(function() {
+        const currentData = JSON.parse($("#node-input-dataJson").typedInput('value'));
+        const dataField = $("#node-input-dataField option:selected").val();
+        const dataInputEl = $("#node-input-dataInput");
+
+        currentData[dataField] = dataInputEl.val();
+
+        $("#node-input-dataJson").typedInput('value', JSON.stringify(currentData));
+        dataInputEl.val("");
+      });
+
+      /**
+        入力した値をdataJson の details 1件目に追加
+      **/
+      $("#node-detailInput-button").click(function() {
+        const currentData = JSON.parse($("#node-input-dataJson").typedInput('value'));
+        const detailJson = currentData.details[0];
+        const detailField = $("#node-input-detailField option:selected").val();
+        const detailInputEl = $("#node-input-detailInput");
+
+        detailJson[detailField] = detailInputEl.val();
+        currentData.details[0] = detailJson;
+
+        $("#node-input-dataJson").typedInput('value', JSON.stringify(currentData));
+        detailInputEl.val("");
+      });
+
+      function addQueryContainerItem() {
+        $("#node-input-transactions-container").editableList('empty');
+
+        if (node.operation != operation
+          || Object.keys(node.dataJson).length === 0) {
+          $("#node-input-transactions-container").editableList('addItem', {});
+
+        } else {
+          if (typeof node.dataJson === 'string') {
+            node.dataJson = JSON.parse(node.dataJson);
+          }
+          for (const query in node.dataJson) {
+            if (query.indexOf("-to") === -1) {
+              $("#node-input-transactions-container").editableList('addItem', query);
+            }
+          }
+        }
+      }
+
+      $("#node-input-transactions-container").css('min-height','150px').css('min-width','400px').editableList({
+        addItem: function(container, i, opt) {
+          let defaultField = "";
+          let isNewRow = false;
+          if (typeof opt === "object") {
+            defaultField = Object.keys(opt)[0] || "transaction_date_time";
+            isNewRow = true;
+          } else if (typeof opt === "string") {
+            defaultField = opt;
+          }
+          defaultField = defaultField.replace("-from", "");
+
+          container.css({
+            overflow: "hidden",
+            whiteSpace: "nowrap",
+            display: "flex",
+            "align-items":"center"
+          });
+          var inputRows = $('<div></div>', {style:"flex-grow:1"}).appendTo(container);
+          var row1 = $('<div></div>', {style:"display: flex;"}).appendTo(inputRows);
+          var row2 = $('<div/>', {style:"display: flex; padding-top: 5px;"}).appendTo(inputRows);
+
+          var selectField = $('<select/>', {id:"node-input-transactions-query-"+i, class:"node-input-transactions-query", style:"width:180px;"}).appendTo(row1);
+          var fromField = $('<input/>', {id:"node-input-transactions-from-"+i, class:"node-input-transactions-from",
+                style:"margin-left: 3px;width:200px;", type:"text"}).appendTo(row1);
+
+          $('<label/>', {for:"node-input-transactions-to-"+i}).text(" ").appendTo(row2);
+          var toField = $('<input/>', {id:"node-input-transactions-to-"+i, class:"node-input-transactions-to",
+                style:"margin-left: 83px;width:200px;", placeholder: "To", type:"text"}).appendTo(row2);
+
+          const items = smaregi_transactions_query[operation];
+          for (const item in items) {
+            const itemLabel = "smaregi-transactions.label." + items[item].label;
+            selectField.append($("<option></option>").val(item).text(node._(itemLabel)));
+          }
+
+          function setDefaultValue(field) {
+            const isRange = items[field].range;
+            const itemType = items[field].type;
+            let defaultForm = new Date();
+            let defaultTo = defaultForm.getTime() + (30*24*60*60*1000);
+            let currentFrom = "";
+            let currentTo = "";
+            if (isRange) {
+              if (!isNewRow) {
+                currentFrom = node.dataJson[field + "-from"];
+                currentTo = node.dataJson[field + "-to"];
+              }
+              fromField.attr("placeholder", "From");
+              row2.show();
+            } else {
+              currentFrom = node.dataJson[field];
+              fromField.attr("placeholder", "");
+              row2.hide();
+            }
+
+            if (itemType === "date") {
+              defaultForm = currentFrom || getDafaultDatetime(defaultForm);
+              defaultTo = currentTo || getDafaultDatetime(new Date(defaultTo));
+              if (field === "sum_date") {
+                defaultForm = defaultForm.split("T")[0];
+                defaultTo = defaultTo.split("T")[0];
+              }
+            }else {
+              defaultForm = currentFrom || "";
+              defaultTo = currentTo || "";
+            }
+
+            fromField.val(defaultForm);
+            toField.val(defaultTo);
+          }
+
+          selectField.on("change", function() {
+            const item = selectField.val();
+            setDefaultValue(item);
+          });
+
+          selectField.val(defaultField);
+          setDefaultValue(defaultField);
+        },
+        sortable: false,
+        removable: true
+      });
+
+    },
+    oneditsave: function() {
+      var operation = $("#node-input-operation option:selected").val();
+
+      if (operation === 'list' || operation === 'layaways' || operation === 'temporaries'){
+        var items = $("#node-input-transactions-container").editableList('items');
+        var queryItems = smaregi_transactions_query[operation];
+        var queries = {};
+        items.each(function(i) {
+          var item = $(this);
+          var fieldVal = item.find(".node-input-transactions-query").val();
+          var fromVal = item.find(".node-input-transactions-from").val();
+          var toVal = item.find(".node-input-transactions-to").val();
+          var isRange = queryItems[fieldVal].range;
+          if (isRange) {
+            queries[fieldVal + "-from"] = fromVal;
+            queries[fieldVal + "-to"] = toVal;
+          } else {
+            queries[fieldVal] = fromVal;
+          }
+        });
+        $("#node-input-dataJson").typedInput('value', JSON.stringify(queries));
+      }
+    },
+    oneditresize: function(size) {
+      var rows = $("#dialog-form>div:not(.node-input-transactions-container-row)");
+      var height = size.height;
+      for (var i=0; i<rows.length; i++) {
+          height -= $(rows[i]).outerHeight(true);
+      }
+      var editorRow = $("#dialog-form>div.node-input-transactions-container-row");
+      height -= (parseInt(editorRow.css("marginTop"))+parseInt(editorRow.css("marginBottom")));
+      height += 16;
+      $("#node-input-transactions-container").editableList('height',height);
     }
   });
 
-  /**
-    入力した値をdataJson に追加
-  **/
-  function setDataJson() {
-    const currentData = JSON.parse($("#node-input-dataJson").typedInput('value'));
-    const dataField = $("#node-input-dataField option:selected").val();
-    const dataInputEl = $("#node-input-dataInput");
-
-    currentData[dataField] = dataInputEl.val();
-
-    $("#node-input-dataJson").typedInput('value', JSON.stringify(currentData));
-    dataInputEl.val("");
-  }
-
-  /**
-    入力した値をdataJson の details 1件目に追加
-  **/
-  function setDetailJson() {
-    const currentData = JSON.parse($("#node-input-dataJson").typedInput('value'));
-    const detailJson = currentData.details[0];
-    const detailField = $("#node-input-detailField option:selected").val();
-    const detailInputEl = $("#node-input-detailInput");
-
-    detailJson[detailField] = detailInputEl.val();
-    currentData.details[0] = detailJson;
-
-    $("#node-input-dataJson").typedInput('value', JSON.stringify(currentData));
-    detailInputEl.val("");
-  }
+  const smaregi_transactions_query = {
+    "list": {
+      "transaction_date_time": {"label": "dateTime", type: "date", "range": true},
+      "terminal_tran_date_time": {"label": "terminalTranDateTime", type: "date", "range": true},
+      "sum_date": {"label": "sumDate", type: "date", "range": true}
+    },
+    "layaways": {
+      "transaction_date_time": {"label": "dateTime", type: "date", "range": true},
+      "terminal_tran_date_time": {"label": "terminalTranDateTime", type: "date", "range": true},
+      "sum_date": {"label": "sumDate", type: "date", "range": true}
+    },
+    "temporaries": {
+      "transaction_date_time": {"label": "dateTime", type: "date", "range": true},
+      "terminal_tran_date_time": {"label": "terminalTranDateTime", type: "date", "range": true}
+    }
+  };
 
   const smaregi_transactions_items = {
     "create": [
